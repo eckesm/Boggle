@@ -4,11 +4,12 @@ class BoggleGame {
 	constructor(timer) {
 		this.timer = timer;
 		this.words = [];
+		this.totalScore = 0;
 
 		this.start_timer(this.timer);
 		this.words = this.retrieve_saved_words();
 		this.populate_results_list_with_saved_words();
-		this.submit_guess_button_click()
+		this.submit_guess_button_click();
 	}
 
 	// --------------------------------------------------------------
@@ -36,7 +37,7 @@ class BoggleGame {
 
 	// --------------------------------------------------------------
 	// Proccess new guesses
-	
+
 	check_for_duplicate(checkWord) {
 		for (let word of this.words) {
 			if (word.toUpperCase() === checkWord.toUpperCase()) {
@@ -51,25 +52,40 @@ class BoggleGame {
 		const wordInCaps = word.toUpperCase();
 		const $newLi = $(`<li>${wordInCaps} - ${score}</li>`);
 		$newLi.appendTo('#results_list');
-		this.add_score_to_total(score);
+		this.totalScore += score;
+		this.add_score_to_total(this.totalScore);
+		this.update_score_in_localStorage(this.totalScore);
 	}
 
 	calculate_word_score(word) {
 		return word.length;
 	}
 
-	add_score_to_total(score) {
+	add_score_to_total(totalScore) {
 		const $score = $('#score');
-		let totalScore = Number($score.attr('data-score'));
-		totalScore += score;
-		$score.attr('data-score', totalScore);
 		$score.text(totalScore + ' points');
+	}
+
+	update_score_in_localStorage(score) {
+		update_localStorage('score', score);
 	}
 
 	add_to_words_list(word) {
 		const wordInCaps = word.toUpperCase();
 		this.words.push(wordInCaps);
 	}
+
+	// --------------------------------------------------------------
+	// when timer finishes
+	// timer_finished(){
+	// 	this.update_server(this.score)
+	// }
+
+	// async update_server(score){
+	// 	const response = await axios.get('/finished-game', { params: { score } });
+	// 	console.log(response)
+	// 	// return response.data
+	// }
 
 	// --------------------------------------------------------------
 	// Timer functions
@@ -124,6 +140,7 @@ class BoggleGame {
 			if (remainingTime === 0) {
 				update_localStorage('timer', 'done');
 				clearInterval(timerInterval);
+				timer_finished();
 			}
 			else {
 				update_localStorage('timer', remainingTime);
@@ -182,7 +199,7 @@ class BoggleGame {
 	// --------------------------------------------------------------
 	// event listeners
 
-	submit_guess_button_click(){
+	submit_guess_button_click() {
 		const $guessButton = $('#guess_button');
 		$guessButton.click(function(e) {
 			e.preventDefault();
@@ -198,8 +215,11 @@ class BoggleGame {
 			currentGame.check_guess(guess);
 		});
 	}
-
 }
+
+/********************************************************************
+------------------ Functions Outside of Class -----------------------
+********************************************************************/
 
 function get_from_localStorage(key) {
 	if (localStorage.getItem(key) === null) {
@@ -214,8 +234,18 @@ function update_localStorage(key, string) {
 	localStorage.setItem(key, string);
 }
 
+async function timer_finished() {
+	console.log(currentGame.totalScore)
+	response = await update_server(currentGame.totalScore);
+	console.log(response);
+}
+
+async function update_server(score) {
+	const response = await axios.get('/finished-game', { params: { score } });
+	return response.data;
+}
+
 /********************************************************************
 ------------------------ When DOM Loads -----------------------------
 ********************************************************************/
 const currentGame = new BoggleGame(10000);
-
