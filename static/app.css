@@ -21,7 +21,7 @@ select {
 	padding: 15px;
 	margin-bottom: 50px;
 	color: white;
-	font-size: 1.5rem;
+	font-size: 1.25rem;
 	background-color: rgba(0, 0, 255, 1);
 }
 
@@ -33,6 +33,7 @@ select {
 	background-color: white;
 	font-weight: bold;
 	font-size: 1.5rem;
+	margin-left: 10px;
 }
 
 #guess_results {
@@ -40,16 +41,32 @@ select {
 	height: 30px;
 	align-items: center;
 	margin-top: 10px;
+	justify-content: space-between;
 }
 
-#guess_outcome_word {
-	font-weight: bold;
+#guess_outcome_div {
+	display: flex;
+	align-items: center;
 }
 
 #guess_outcome {
 	margin: 0px;
 	margin-left: 10px;
 	font-style: italic;
+}
+
+#guess_outcome_word {
+	font-weight: bold;
+	margin: 0px;
+}
+
+#score {
+	margin: 0px;
+}
+
+#timer {
+	width: 125px;
+	text-align: end;
 }
 
 #boggle_board_table_and_results {
@@ -72,12 +89,17 @@ select {
 	height: fit-content;
 	min-width: 250px;
 	width: fit-content;
+	background-color: white;
 }
 
-#boggle_board_results h3{
+#boggle_board_results h3 {
 	text-align: center;
-	/* border: 1px solid black; */
+	border-bottom: 1px solid black;
 	margin: 0px;
+	font-size: 1.5rem;
+	font-weight: bold;
+	background-color: rgba(0, 0, 255, 1);
+	color: white;
 }
 
 #new_game_button {

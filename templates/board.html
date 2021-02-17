@@ -13,8 +13,12 @@
             <button type="submit" id="guess_button">Submit Guess</button>
         </form>
         <div id="guess_results">
-            <label class="guess_results" for="guess_outcome" id="guess_outcome_word">Guess:</label>
-            <p class="guess_results" id="guess_outcome">outcome</p>
+            <div id="guess_outcome_div">
+                <label for="guess_outcome" id="guess_outcome_word">Guess:</label>
+                <p id="guess_outcome">outcome</p>
+            </div>
+            <p id="score" data-score="0">0 points</p>
+            <p id="timer" data-time=""></p>
         </div>
     </div>
 
