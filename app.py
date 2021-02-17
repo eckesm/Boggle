@@ -73,23 +73,28 @@ def start_a_new_board():
 @app.route('/check-guess', methods=['GET'])
 def check_guess():
     guess = request.args.get('guess', None)
-    print_to_flask(guess)
+    # print_to_flask(guess)
     result = boggle_game.check_valid_word(session['boggle_board'], guess)
-    print_to_flask(result)
+    print_to_flask(f'{guess}: {result}')
     return jsonify({"guess_result": result})
 
 
-@app.route('/finished-game', methods=['GET'])
+@app.route('/finished-game', methods=['POST'])
 def record_finished_game():
     total_score = int(session.get('total_score', 0))
-    score = int(request.args.get('score', 0))
+
+    # jsonrequest=request.json
+    # import pdb
+    # pdb.set_trace()
+    # raise
+
+    score = int(request.json.get('score', 0))
     total_score += score
     session['total_score'] = total_score
-    print_to_flask(total_score)
+    print_to_flask(f'total score: {total_score}')
 
     play_count = int(session.get('play_count', 0))
     play_count += 1
-    print_to_flask(play_count)
     session['play_count'] = play_count
-
+    print_to_flask(f'games played: {play_count}')
     return jsonify({'total_score': total_score, 'play_count': play_count})

@@ -1,10 +1,11 @@
-// 'use strict';
-
 class BoggleGame {
 	constructor(timer) {
 		this.timer = timer;
 		this.words = [];
 		this.totalScore = 0;
+		this.get_from_localStorage = this.get_from_localStorage.bind(this);
+		this.update_localStorage = this.update_localStorage.bind(this);
+		this.timer_finished = this.timer_finished.bind(this);
 
 		this.start_timer(this.timer);
 		this.words = this.retrieve_saved_words();
@@ -12,12 +13,13 @@ class BoggleGame {
 		this.submit_guess_button_click();
 	}
 
-	// --------------------------------------------------------------
-	// Retrieve and process data from localStorage
+	/****************************************************************
+	-------------- Check localStorage for Active Game ---------------
+	****************************************************************/
 
 	retrieve_saved_words() {
 		const retrievedWords = [];
-		const savedWords = get_from_localStorage('words');
+		const savedWords = this.get_from_localStorage('words');
 		if (savedWords !== null) {
 			const savedWordsArray = savedWords.split(';');
 			for (let word of savedWordsArray) {
@@ -35,8 +37,9 @@ class BoggleGame {
 		}
 	}
 
-	// --------------------------------------------------------------
-	// Proccess new guesses
+	/****************************************************************
+	----------------- Processing New Guesses & UI -------------------
+	****************************************************************/
 
 	check_for_duplicate(checkWord) {
 		for (let word of this.words) {
@@ -67,7 +70,7 @@ class BoggleGame {
 	}
 
 	update_score_in_localStorage(score) {
-		update_localStorage('score', score);
+		this.update_localStorage('score', score);
 	}
 
 	add_to_words_list(word) {
@@ -75,23 +78,12 @@ class BoggleGame {
 		this.words.push(wordInCaps);
 	}
 
-	// --------------------------------------------------------------
-	// when timer finishes
-	// timer_finished(){
-	// 	this.update_server(this.score)
-	// }
-
-	// async update_server(score){
-	// 	const response = await axios.get('/finished-game', { params: { score } });
-	// 	console.log(response)
-	// 	// return response.data
-	// }
-
-	// --------------------------------------------------------------
-	// Timer functions
+	/****************************************************************
+	------------------------ Timer Functions ------------------------
+	****************************************************************/
 
 	check_if_time_up() {
-		const savedTime = get_from_localStorage('timer');
+		const savedTime = this.get_from_localStorage('timer');
 		if (savedTime === 'done') {
 			return true;
 		}
@@ -114,7 +106,7 @@ class BoggleGame {
 		const $timer = $('#timer');
 		let remainingTime = timerMilliseconds;
 
-		let savedTime = get_from_localStorage('timer');
+		let savedTime = this.get_from_localStorage('timer');
 		if (savedTime === 'done') {
 			$timer.text(form_timer_text(0));
 			this.timer = 'done';
@@ -126,30 +118,31 @@ class BoggleGame {
 			remainingTime = savedTime;
 		}
 
-		update_localStorage('timer', remainingTime);
+		this.update_localStorage('timer', remainingTime);
 		$timer.text(form_timer_text(remainingTime));
 
-		let timerInterval = setInterval(function() {
-			let remainingTime = Number(get_from_localStorage('timer'));
-			console.log(remainingTime);
+		let timerInterval = setInterval(() => {
+			let remainingTime = Number(this.get_from_localStorage('timer'));
+			// console.log(remainingTime);
 
 			remainingTime -= 1000;
 
 			$timer.text(form_timer_text(remainingTime));
 
 			if (remainingTime === 0) {
-				update_localStorage('timer', 'done');
+				this.update_localStorage('timer', 'done');
 				clearInterval(timerInterval);
-				timer_finished();
+				this.timer_finished();
 			}
 			else {
-				update_localStorage('timer', remainingTime);
+				this.update_localStorage('timer', remainingTime);
 			}
 		}, 1000);
 	}
 
-	// --------------------------------------------------------------
-	// Check guess with server
+	/****************************************************************
+	------------------------ Server Requests ------------------------
+	****************************************************************/
 
 	async check_guess(guess) {
 		const $guessOutcomeWord = $('#guess_outcome_word');
@@ -162,7 +155,7 @@ class BoggleGame {
 		}
 
 		let result = await this.check_guess_with_server(guess);
-		console.log(result);
+		// console.log(result);
 
 		if (result === 'ok') {
 			$guessOutcome.text('correct!');
@@ -183,21 +176,61 @@ class BoggleGame {
 		return response.data.guess_result;
 	}
 
-	// --------------------------------------------------------------
-	// localStorgage helper functions
+	// --> Timer finished
+
+	async timer_finished() {
+		console.log(`score: ${currentGame.totalScore}`);
+		let response = await this.update_server(this.totalScore, this.words);
+		// console.log(response);
+		const sessionPlayCount = response.play_count;
+		const sessionTotalScore = response.total_score;
+		let message=`Games Played: ${sessionPlayCount} \nTotal Score: ${sessionTotalScore}`
+		alert(message);
+		// localStorage.clear()
+
+
+		
+	}
+
+	async update_server(score, words) {
+		const response = await axios({
+			url    : '/finished-game',
+			method : 'POST',
+			data   : { score, words }
+		});
+		return response.data;
+	}
+
+	/****************************************************************
+	--------------------- localStorage Functions --------------------
+	****************************************************************/
 
 	add_word_to_localStorage(word) {
-		let savedWords = get_from_localStorage('words');
+		let savedWords = this.get_from_localStorage('words');
 		if (savedWords === null) {
 			savedWords = '';
 		}
 		savedWords += `${word};`;
-		console.log(savedWords);
+		// console.log(savedWords);
 		localStorage.setItem('words', savedWords);
 	}
 
-	// --------------------------------------------------------------
-	// event listeners
+	get_from_localStorage(key) {
+		if (localStorage.getItem(key) === null) {
+			return null;
+		}
+		else {
+			return localStorage.getItem(key);
+		}
+	}
+
+	update_localStorage(key, string) {
+		localStorage.setItem(key, string);
+	}
+
+	/****************************************************************
+	------------------------ Event Listeners ------------------------
+	****************************************************************/
 
 	submit_guess_button_click() {
 		const $guessButton = $('#guess_button');
@@ -215,34 +248,6 @@ class BoggleGame {
 			currentGame.check_guess(guess);
 		});
 	}
-}
-
-/********************************************************************
------------------- Functions Outside of Class -----------------------
-********************************************************************/
-
-function get_from_localStorage(key) {
-	if (localStorage.getItem(key) === null) {
-		return null;
-	}
-	else {
-		return localStorage.getItem(key);
-	}
-}
-
-function update_localStorage(key, string) {
-	localStorage.setItem(key, string);
-}
-
-async function timer_finished() {
-	console.log(currentGame.totalScore)
-	response = await update_server(currentGame.totalScore);
-	console.log(response);
-}
-
-async function update_server(score) {
-	const response = await axios.get('/finished-game', { params: { score } });
-	return response.data;
 }
 
 /********************************************************************
