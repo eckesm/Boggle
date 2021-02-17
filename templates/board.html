@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}Boggle: Game Board{% endblock %}
+
+{% block content %}
+
+    <!-- <h1>Boggle!</h1> -->
+    
+<div id="boggle_game_div">
+    <div id="guess_div">
+        <form action="" method="GET">
+            <!-- <label for="guess_input">Guess:</label> -->
+            <input type="text" id="guess_input" name="guess">
+            <button type="submit" id="guess_button">Submit Guess</button>
+        </form>
+        <div id="guess_results">
+            <label class="guess_results" for="guess_outcome" id="guess_outcome_word">Guess:</label>
+            <p class="guess_results" id="guess_outcome">outcome</p>
+        </div>
+    </div>
+
+    
+    <div id="boggle_board_table_and_results">
+        <div id="boggle_board_table_div">
+            <table id="boggle_board_table">
+                {% for row in session['boggle_board'] %}
+                <tr>
+                    {% for space in row %}
+                    
+                    <td>{{space}}</td>
+                    
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        
+        
+        <div id="boggle_board_results">
+            <h3>RESULTS</h3>
+            <ul id="results_list">
+                
+            </ul>
+        </div>
+    </div>
+</div>
+    
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/board.js"></script>
+{% endblock %}  
