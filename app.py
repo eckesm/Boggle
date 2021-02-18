@@ -48,7 +48,7 @@ def print_to_flask(thing_to_print):
 @app.route('/')
 def show_root():
     """Shows the home page."""
-    return render_template('home.html')
+    return render_template('index.html')
 
 
 @app.route('/board')
@@ -61,7 +61,6 @@ def show_game_board():
         new_game()
         flash('There was no active game; this is a new game.', "info")
 
-    # print_to_flask(session['game_over'])
     if session.get('game_over', False) == True:
         session['game_over'] = False
         return render_template('board.html', clear_localStorage=True)
@@ -79,6 +78,7 @@ def start_a_new_board():
 
 @app.route('/check-guess', methods=['GET'])
 def check_guess():
+    """Receives API and returns if word is in board, not a word, or a word but not on the board."""
     guess = request.args.get('guess', None)
     result = boggle_game.check_valid_word(session['boggle_board'], guess)
     print_to_flask(f'{guess}: {result}')
@@ -87,24 +87,19 @@ def check_guess():
 
 @app.route('/finished-game', methods=['POST'])
 def record_finished_game():
+    """
+    When client finishes a game, updates the server to increase number of games played and total score across all games played in session.
+    """
 
     session['game_over'] = True
-    # print_to_flask(session['game_over'])
 
     total_score = int(session.get('total_score', 0))
-
-    # jsonrequest=request.json
-    # import pdb
-    # pdb.set_trace()
-    # raise
-
     score = int(request.json.get('score', 0))
     total_score += score
     session['total_score'] = total_score
-    # print_to_flask(f'total score: {total_score}')
 
     play_count = int(session.get('play_count', 0))
     play_count += 1
     session['play_count'] = play_count
-    # print_to_flask(f'games played: {play_count}')
+
     return jsonify({'total_score': total_score, 'play_count': play_count})
