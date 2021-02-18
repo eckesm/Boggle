@@ -1,0 +1,161 @@
+body {
+	padding: 0;
+	margin: 0;
+	background-color: rgba(0, 0, 255, 0.1);
+}
+
+h1 {
+	margin-top: 0px;
+}
+select {
+	width: 200px;
+}
+
+#content {
+	margin: 40px;
+}
+
+#guess_div {
+	border: 1px solid black;
+	width: fit-content;
+	padding: 15px;
+	margin-bottom: 50px;
+	color: white;
+	font-size: 1.25rem;
+	background-color: rgba(0, 0, 255, 1);
+}
+
+#guess_input {
+	font-size: 1.5rem;
+}
+
+#guess_button {
+	background-color: white;
+	font-weight: bold;
+	font-size: 1.5rem;
+	margin-left: 10px;
+}
+
+#guess_results {
+	display: flex;
+	height: 30px;
+	align-items: center;
+	margin-top: 10px;
+	justify-content: space-between;
+}
+
+#guess_outcome_div {
+	display: flex;
+	align-items: center;
+}
+
+#guess_outcome {
+	margin: 0px;
+	margin-left: 10px;
+	font-style: italic;
+}
+
+#guess_outcome_word {
+	font-weight: bold;
+	margin: 0px;
+}
+
+#score {
+	margin: 0px;
+}
+
+#timer {
+	width: 125px;
+	text-align: end;
+}
+
+#boggle_board_table_and_results {
+	display: flex;
+	justify-content: left;
+}
+
+#boggle_board_table_div {
+	border: 1px solid black;
+	width: fit-content;
+	height: fit-content;
+	padding: 5px;
+	background-color: rgba(0, 0, 255, 1);
+}
+
+#boggle_board_results {
+	border: 1px solid black;
+	margin-left: 20px;
+	min-height: 250px;
+	height: fit-content;
+	min-width: 250px;
+	width: fit-content;
+	background-color: white;
+}
+
+#boggle_board_results h3 {
+	text-align: center;
+	border-bottom: 1px solid black;
+	margin: 0px;
+	font-size: 1.5rem;
+	font-weight: bold;
+	background-color: rgba(0, 0, 255, 1);
+	color: white;
+}
+
+#new_game_button {
+	background-color: rgba(0, 0, 255, 0.9);
+	color: white;
+	font-weight: bold;
+	font-size: 1.5rem;
+}
+
+td {
+	text-align: center;
+	font-size: 2.5rem;
+	font-weight: bold;
+	width: 50px;
+	height: 50px;
+	border: 1px solid black;
+	background-color: white;
+}
+
+td:hover {
+	background-color: yellow;
+}
+
+.navbar {
+	background-color: rgba(0, 0, 255, 1);
+	overflow: hidden;
+}
+
+.navbar a {
+	font-weight: bold;
+	float: left;
+	color: white;
+	text-align: center;
+	padding: 14px 16px;
+	text-decoration: none;
+	font-size: 17px;
+}
+
+.navbar a:hover {
+	background-color: white;
+	color: rgba(0, 0, 255, 1);
+}
+
+.messages p {
+	padding: 1rem;
+	font-size: 1.5rem;
+	border-radius: 1rem;
+	box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+	margin: 0px;
+}
+.messages .success {
+	background-color: rgba(0, 255, 0, 0.1);
+}
+.messages .error {
+	background-color: rgba(255, 0, 0, 0.1);
+}
+.messages .info {
+	background-color: rgba(0, 0, 255, 0.1);
+}
