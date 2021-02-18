@@ -4,7 +4,7 @@
 {% block content %}
 
     <!-- <h1>Boggle!</h1> -->
-    
+<input type="hidden" id="clear_localStorage" value="{{clear_localStorage}}">
 <div id="boggle_game_div">
     <div id="guess_div">
         <form action="" method="GET">
@@ -17,6 +17,8 @@
                 <p id="guess_outcome">outcome</p>
             </div>
             <p id="score" data-score="0">0 points</p>
+            <p id="total_score"></p>
+            <p id="total_plays"></p>
             <p id="timer" data-time=""></p>
         </div>
     </div>

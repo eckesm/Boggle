@@ -31,6 +31,7 @@ def new_game():
     """Loads a new board and saves to session."""
     boggle_board = boggle_game.make_board()
     session['boggle_board'] = boggle_board
+    session['game_over'] = True
 
 
 def print_to_flask(thing_to_print):
@@ -59,7 +60,13 @@ def show_game_board():
     if boggle_board == None:
         new_game()
         flash('There was no active game; this is a new game.', "info")
-    return render_template('board.html')
+
+    # print_to_flask(session['game_over'])
+    if session.get('game_over', False) == True:
+        session['game_over'] = False
+        return render_template('board.html', clear_localStorage=True)
+    else:
+        return render_template('board.html', clear_localStorage=False)
 
 
 @app.route('/new-board')
@@ -73,7 +80,6 @@ def start_a_new_board():
 @app.route('/check-guess', methods=['GET'])
 def check_guess():
     guess = request.args.get('guess', None)
-    # print_to_flask(guess)
     result = boggle_game.check_valid_word(session['boggle_board'], guess)
     print_to_flask(f'{guess}: {result}')
     return jsonify({"guess_result": result})
@@ -81,6 +87,10 @@ def check_guess():
 
 @app.route('/finished-game', methods=['POST'])
 def record_finished_game():
+
+    session['game_over'] = True
+    # print_to_flask(session['game_over'])
+
     total_score = int(session.get('total_score', 0))
 
     # jsonrequest=request.json
@@ -91,10 +101,10 @@ def record_finished_game():
     score = int(request.json.get('score', 0))
     total_score += score
     session['total_score'] = total_score
-    print_to_flask(f'total score: {total_score}')
+    # print_to_flask(f'total score: {total_score}')
 
     play_count = int(session.get('play_count', 0))
     play_count += 1
     session['play_count'] = play_count
-    print_to_flask(f'games played: {play_count}')
+    # print_to_flask(f'games played: {play_count}')
     return jsonify({'total_score': total_score, 'play_count': play_count})

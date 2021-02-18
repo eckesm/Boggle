@@ -7,6 +7,7 @@ class BoggleGame {
 		this.update_localStorage = this.update_localStorage.bind(this);
 		this.timer_finished = this.timer_finished.bind(this);
 
+		this.clear_localStorage_check();
 		this.start_timer(this.timer);
 		this.words = this.retrieve_saved_words();
 		this.populate_results_list_with_saved_words();
@@ -155,7 +156,6 @@ class BoggleGame {
 		}
 
 		let result = await this.check_guess_with_server(guess);
-		// console.log(result);
 
 		if (result === 'ok') {
 			$guessOutcome.text('correct!');
@@ -180,25 +180,35 @@ class BoggleGame {
 
 	async timer_finished() {
 		console.log(`score: ${currentGame.totalScore}`);
-		let response = await this.update_server(this.totalScore, this.words);
+		let response = await this.update_server(this.totalScore);
 		// console.log(response);
-		const sessionPlayCount = response.play_count;
 		const sessionTotalScore = response.total_score;
-		let message=`Games Played: ${sessionPlayCount} \nTotal Score: ${sessionTotalScore}`
+		const sessionPlayCount = response.play_count;
+
+		let message = `${this.totalScore} points this game. \nCorrect words found: ${this.words} \n${sessionTotalScore} points scored in all ${sessionPlayCount} games played.`;
+		
+		$('#total_score').text(`${sessionTotalScore} total points`);
+		$('#total_plays').text(`${sessionPlayCount} games`);
+		$('#guess_outcome_div').remove();
 		alert(message);
 		// localStorage.clear()
-
-
-		
 	}
 
-	async update_server(score, words) {
+	async update_server(score) {
 		const response = await axios({
 			url    : '/finished-game',
 			method : 'POST',
-			data   : { score, words }
+			data   : { score }
 		});
 		return response.data;
+
+		// const response = await axios({
+		// 	url    : '/finished-game',
+		// 	method : 'POST',
+		// 	data   : { score }
+		// });
+		// const json_data=await response.json()
+		// return json_data.data;
 	}
 
 	/****************************************************************
@@ -232,6 +242,12 @@ class BoggleGame {
 	------------------------ Event Listeners ------------------------
 	****************************************************************/
 
+	clear_localStorage_check() {
+		if ($('#clear_localStorage').val() === 'True') {
+			localStorage.clear();
+		}
+	}
+
 	submit_guess_button_click() {
 		const $guessButton = $('#guess_button');
 		$guessButton.click(function(e) {
@@ -253,4 +269,4 @@ class BoggleGame {
 /********************************************************************
 ------------------------ When DOM Loads -----------------------------
 ********************************************************************/
-const currentGame = new BoggleGame(10000);
+const currentGame = new BoggleGame(60000);
